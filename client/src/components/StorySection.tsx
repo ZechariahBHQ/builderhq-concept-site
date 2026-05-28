@@ -1,9 +1,13 @@
 /* ============================================================
    StorySection — Warm Organic Editorial
    Dashed SVG bezier path animations · 3-D numeral counters
-   Alternating image/text story blocks
+   Parallax depth on images (0.6x speed) vs text (1x)
+   Magnetic "Full Story" CTA
    ============================================================ */
 import { useEffect, useRef } from "react";
+import { useParallaxDepth } from "@/hooks/useParallaxDepth";
+import { useScrollSkew } from "@/hooks/useScrollSkew";
+import { useMagneticButton } from "@/hooks/useMagneticButton";
 
 const LIFESTYLE_IMAGE =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663482533871/jpQMoZHktxoMSn2wFqYJ4V/lifestyle-orange-NaiUCsQL8zdqTaFwVBX5zp.webp";
@@ -18,10 +22,7 @@ function usePathReveal() {
     if (!el) return;
     const obs = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add("visible");
-          obs.unobserve(el);
-        }
+        if (entry.isIntersecting) { el.classList.add("visible"); obs.unobserve(el); }
       },
       { threshold: 0.2 }
     );
@@ -71,14 +72,26 @@ export default function StorySection() {
   const block1Ref = useReveal(0.15);
   const block2Ref = useReveal(0.15);
 
+  // Parallax depth on each image — moves at 0.62x scroll speed
+  const img1ParallaxRef = useParallaxDepth<HTMLDivElement>(0.62);
+  const img2ParallaxRef = useParallaxDepth<HTMLDivElement>(0.62);
+
+  // Scroll-velocity skew on the whole section
+  const skewRef = useScrollSkew<HTMLElement>(2.5);
+
+  // Magnetic CTA
+  const ctaRef = useMagneticButton<HTMLAnchorElement>(0.35, 75);
+
   return (
     <section
       id="story"
+      ref={skewRef}
       style={{
         background: "var(--cream)",
         padding: "4rem 0 8rem",
         position: "relative",
         overflow: "hidden",
+        willChange: "transform",
       }}
     >
       {/* ── Dashed SVG path layer ── */}
@@ -115,7 +128,6 @@ export default function StorySection() {
           opacity="0.25"
           className="path-animate"
         />
-        {/* Decorative ellipses on path */}
         <ellipse cx="700" cy="320" rx="36" ry="22" stroke="var(--crimson)" strokeWidth="1.2" strokeDasharray="5 4" fill="none" opacity="0.2" />
         <ellipse cx="340" cy="440" rx="28" ry="18" stroke="var(--crimson)" strokeWidth="1.2" strokeDasharray="5 4" fill="none" opacity="0.2" />
       </svg>
@@ -134,21 +146,25 @@ export default function StorySection() {
             marginBottom: "8rem",
           }}
         >
-          {/* Image */}
-          <div style={{ position: "relative" }}>
-            <img
-              src={LIFESTYLE_IMAGE}
-              alt="Person holding an artisan popsicle"
-              style={{
-                width: "100%",
-                aspectRatio: "3/4",
-                objectFit: "cover",
-                display: "block",
-              }}
-            />
+          {/* Image — parallax depth wrapper */}
+          <div style={{ position: "relative", overflow: "hidden" }}>
+            <div ref={img1ParallaxRef} style={{ willChange: "transform" }}>
+              <img
+                src={LIFESTYLE_IMAGE}
+                alt="Person holding an artisan popsicle"
+                style={{
+                  width: "100%",
+                  aspectRatio: "3/4",
+                  objectFit: "cover",
+                  display: "block",
+                  transform: "scale(1.14)",
+                  transformOrigin: "center center",
+                }}
+              />
+            </div>
           </div>
 
-          {/* Text + numeral */}
+          {/* Text + numeral — moves at normal speed */}
           <div>
             <div style={{ display: "flex", alignItems: "flex-start", gap: "1.5rem", marginBottom: "1.5rem" }}>
               <Numeral3D n="01" />
@@ -226,34 +242,40 @@ export default function StorySection() {
             >
               Every batch is made by hand in small quantities. We never use artificial flavours, stabilisers, or shortcuts. The mango is pureed fresh. The chocolate is tempered by hand. The pistachio paste is ground on-site. This is what "handcrafted" actually means.
             </p>
-            <a href="#about" className="btn-outline-crimson" style={{ textDecoration: "none" }}>
+            <a
+              ref={ctaRef}
+              href="#about"
+              className="btn-outline-crimson"
+              style={{ textDecoration: "none", display: "inline-flex", willChange: "transform" }}
+            >
               Full Story
             </a>
           </div>
 
-          {/* Image */}
-          <div>
-            <img
-              src={ABOUT_IMAGE}
-              alt="Artisan popsicles with fresh ingredients"
-              style={{
-                width: "100%",
-                aspectRatio: "3/4",
-                objectFit: "cover",
-                display: "block",
-              }}
-            />
+          {/* Image — parallax depth wrapper */}
+          <div style={{ position: "relative", overflow: "hidden" }}>
+            <div ref={img2ParallaxRef} style={{ willChange: "transform" }}>
+              <img
+                src={ABOUT_IMAGE}
+                alt="Artisan popsicles with fresh ingredients"
+                style={{
+                  width: "100%",
+                  aspectRatio: "3/4",
+                  objectFit: "cover",
+                  display: "block",
+                  transform: "scale(1.14)",
+                  transformOrigin: "center center",
+                }}
+              />
+            </div>
           </div>
         </div>
 
       </div>
 
-      {/* Responsive */}
       <style>{`
         @media (max-width: 768px) {
-          .story-block {
-            grid-template-columns: 1fr !important;
-          }
+          .story-block { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </section>

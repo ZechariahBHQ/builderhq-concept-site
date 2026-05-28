@@ -1,9 +1,13 @@
 /* ============================================================
    AboutSection — Warm Organic Editorial
-   Left image · right oversized heading + body · floating clouds
-   Scroll-triggered reveal via IntersectionObserver
+   Left image with parallax depth (moves at 0.6x scroll speed)
+   Right text moves at normal speed — creates depth separation
+   Scroll-velocity skew on the whole section
    ============================================================ */
 import { useEffect, useRef } from "react";
+import { useParallaxDepth } from "@/hooks/useParallaxDepth";
+import { useScrollSkew } from "@/hooks/useScrollSkew";
+import { useMagneticButton } from "@/hooks/useMagneticButton";
 
 const ABOUT_IMAGE =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663482533871/jpQMoZHktxoMSn2wFqYJ4V/about-ingredients-QZUYhJbc6tyFqMsMuQSjKS.webp";
@@ -15,10 +19,7 @@ function useReveal(threshold = 0.18) {
     if (!el) return;
     const obs = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add("visible");
-          obs.unobserve(el);
-        }
+        if (entry.isIntersecting) { el.classList.add("visible"); obs.unobserve(el); }
       },
       { threshold }
     );
@@ -28,16 +29,9 @@ function useReveal(threshold = 0.18) {
   return ref;
 }
 
-// Decorative cloud SVG
 function Cloud({ size = 80, opacity = 0.35 }: { size?: number; opacity?: number }) {
   return (
-    <svg
-      width={size}
-      height={size * 0.6}
-      viewBox="0 0 120 72"
-      fill="none"
-      style={{ opacity }}
-    >
+    <svg width={size} height={size * 0.6} viewBox="0 0 120 72" fill="none" style={{ opacity }}>
       <ellipse cx="60" cy="52" rx="58" ry="20" fill="var(--crimson)" />
       <ellipse cx="40" cy="44" rx="28" ry="22" fill="var(--crimson)" />
       <ellipse cx="72" cy="38" rx="32" ry="26" fill="var(--crimson)" />
@@ -49,16 +43,27 @@ function Cloud({ size = 80, opacity = 0.35 }: { size?: number; opacity?: number 
 export default function AboutSection() {
   const headRef = useReveal();
   const bodyRef = useReveal(0.12);
-  const imgRef = useReveal(0.1);
+  const imgRevealRef = useReveal(0.1);
+
+  // Parallax: image moves at 0.6x — slower than the page = depth
+  const imgParallaxRef = useParallaxDepth<HTMLDivElement>(0.6);
+
+  // Scroll-velocity skew on the section
+  const skewRef = useScrollSkew<HTMLElement>(3);
+
+  // Magnetic CTA
+  const ctaRef = useMagneticButton<HTMLAnchorElement>(0.35, 75);
 
   return (
     <section
       id="about"
+      ref={skewRef}
       style={{
         background: "var(--cream)",
         padding: "8rem 0 6rem",
         position: "relative",
         overflow: "hidden",
+        willChange: "transform",
       }}
     >
       {/* Floating decorative clouds */}
@@ -73,7 +78,6 @@ export default function AboutSection() {
       </div>
 
       <div className="container">
-        {/* Top row: image left + headline right */}
         <div
           style={{
             display: "grid",
@@ -83,23 +87,32 @@ export default function AboutSection() {
           }}
           className="about-grid"
         >
-          {/* Image */}
+          {/* Image — parallax depth layer */}
           <div
-            ref={imgRef}
+            ref={imgRevealRef}
             className="reveal"
-            style={{ position: "relative" }}
+            style={{ position: "relative", overflow: "hidden" }}
           >
-            <img
-              src={ABOUT_IMAGE}
-              alt="Artisan ice cream popsicles with fresh ingredients"
-              style={{
-                width: "100%",
-                aspectRatio: "3/4",
-                objectFit: "cover",
-                display: "block",
-              }}
-            />
-            {/* Small label badge */}
+            {/* Inner wrapper gets the parallax transform */}
+            <div
+              ref={imgParallaxRef}
+              style={{ willChange: "transform" }}
+            >
+              <img
+                src={ABOUT_IMAGE}
+                alt="Artisan ice cream popsicles with fresh ingredients"
+                style={{
+                  width: "100%",
+                  aspectRatio: "3/4",
+                  objectFit: "cover",
+                  display: "block",
+                  // Scale up slightly so parallax offset doesn't reveal edges
+                  transform: "scale(1.12)",
+                  transformOrigin: "center center",
+                }}
+              />
+            </div>
+            {/* Label badge */}
             <div
               style={{
                 position: "absolute",
@@ -112,23 +125,17 @@ export default function AboutSection() {
                 letterSpacing: "0.2em",
                 textTransform: "uppercase",
                 padding: "0.5rem 1rem",
+                zIndex: 2,
               }}
             >
               Since 2015
             </div>
           </div>
 
-          {/* Headline + body */}
+          {/* Text — moves at normal scroll speed, creating depth vs image */}
           <div style={{ paddingTop: "1rem" }}>
-            <div
-              ref={headRef}
-              className="reveal"
-              style={{ transitionDelay: "0.1s" }}
-            >
-              <p
-                className="section-label"
-                style={{ marginBottom: "1rem" }}
-              >
+            <div ref={headRef} className="reveal" style={{ transitionDelay: "0.1s" }}>
+              <p className="section-label" style={{ marginBottom: "1rem" }}>
                 About the brand
               </p>
               <h2
@@ -152,11 +159,7 @@ export default function AboutSection() {
               </h2>
             </div>
 
-            <div
-              ref={bodyRef}
-              className="reveal"
-              style={{ transitionDelay: "0.2s" }}
-            >
+            <div ref={bodyRef} className="reveal" style={{ transitionDelay: "0.2s" }}>
               <h3
                 style={{
                   fontFamily: "var(--font-body)",
@@ -194,9 +197,10 @@ export default function AboutSection() {
                 We source pistachios from a small farm in Sicily, Alfonso mangoes from India, and chocolate directly from Belgium. Every ingredient is chosen because it is the best — not because it is the easiest.
               </p>
               <a
-                href="#about"
+                ref={ctaRef}
+                href="#story"
                 className="btn-outline-crimson"
-                style={{ textDecoration: "none" }}
+                style={{ textDecoration: "none", display: "inline-flex", willChange: "transform" }}
               >
                 Our Story
               </a>
@@ -205,12 +209,9 @@ export default function AboutSection() {
         </div>
       </div>
 
-      {/* Responsive grid override */}
       <style>{`
         @media (max-width: 768px) {
-          .about-grid {
-            grid-template-columns: 1fr !important;
-          }
+          .about-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </section>

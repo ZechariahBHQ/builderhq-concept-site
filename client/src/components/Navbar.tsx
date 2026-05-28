@@ -5,6 +5,7 @@
    ============================================================ */
 import { useState, useEffect } from "react";
 import { ShoppingBag, X, Menu } from "lucide-react";
+import { useMagneticButton } from "@/hooks/useMagneticButton";
 
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
@@ -19,6 +20,10 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartCount] = useState(0);
   const [scrolled, setScrolled] = useState(false);
+
+  const cartRef = useMagneticButton<HTMLButtonElement>(0.3, 65);
+  const flavoursRef = useMagneticButton<HTMLButtonElement>(0.3, 65);
+  const menuRef = useMagneticButton<HTMLButtonElement>(0.3, 65);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -97,8 +102,9 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           {/* Cart */}
           <button
+            ref={cartRef}
             className="btn-outline-crimson"
-            style={{ padding: "0.4rem 0.75rem", gap: "0.4rem" }}
+            style={{ padding: "0.4rem 0.75rem", gap: "0.4rem", willChange: "transform" }}
             aria-label="Open cart"
           >
             <ShoppingBag size={14} strokeWidth={1.5} />
@@ -109,19 +115,21 @@ export default function Navbar() {
 
           {/* Flavours shortcut */}
           <button
+            ref={flavoursRef}
             className="btn-outline-crimson hidden sm:inline-flex"
             onClick={() => handleNavClick("#flavours")}
-            style={{ padding: "0.4rem 1rem" }}
+            style={{ padding: "0.4rem 1rem", willChange: "transform" }}
           >
             Flavours
           </button>
 
           {/* Menu trigger */}
           <button
+            ref={menuRef}
             className="btn-outline-crimson"
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
-            style={{ padding: "0.4rem 0.9rem", gap: "0.5rem" }}
+            style={{ padding: "0.4rem 0.9rem", gap: "0.5rem", willChange: "transform" }}
           >
             <span style={{ fontFamily: "var(--font-body)", fontSize: "0.75rem", letterSpacing: "0.12em" }}>
               Menu
