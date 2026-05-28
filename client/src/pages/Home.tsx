@@ -1,25 +1,39 @@
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { Streamdown } from 'streamdown';
+/* ============================================================
+   Home — Warm Organic Editorial template
+   Assembles all sections in order with custom cursor
+   ============================================================ */
+import Navbar from "@/components/Navbar";
+import HeroSection from "@/components/HeroSection";
+import AboutSection from "@/components/AboutSection";
+import StatsStrip from "@/components/StatsStrip";
+import FlavoursSection from "@/components/FlavoursSection";
+import MarqueeStrip from "@/components/MarqueeStrip";
+import StorySection from "@/components/StorySection";
+import MarqueeGallery from "@/components/MarqueeGallery";
+import PartnershipSection from "@/components/PartnershipSection";
+import ContactSection from "@/components/ContactSection";
+import CustomCursor from "@/components/CustomCursor";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Best Practices, Design Guide and Common Pitfalls
- */
 export default function Home() {
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
-
   return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
-      </main>
+    <div
+      style={{
+        background: "var(--cream)",
+        minHeight: "100vh",
+        cursor: "none",
+      }}
+    >
+      <CustomCursor />
+      <Navbar />
+      <HeroSection />
+      <AboutSection />
+      <StatsStrip />
+      <FlavoursSection />
+      <MarqueeStrip />
+      <StorySection />
+      <MarqueeGallery />
+      <PartnershipSection />
+      <ContactSection />
     </div>
   );
 }
