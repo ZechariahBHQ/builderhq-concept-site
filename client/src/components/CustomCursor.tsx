@@ -1,34 +1,32 @@
 /* ============================================================
    CustomCursor — Warm Organic Editorial
-   Dot + ring swap between template colours:
-     • Crimson (#8C1A1A) on cream backgrounds
-     • Cream (#F7E8D8)   on crimson/dark backgrounds
-   Uses elementFromPoint to sample the element under the cursor
-   and checks its computed background-color to decide which
-   colour to render.
+   • Dot follows cursor exactly
+   • Ring lerps behind with lag
+   • Colour inverts: crimson on cream, cream on crimson
+   • Registers itself with useMagneticButton for:
+     - D: sticky ring snap to button centre
+     - H: ring scales up when snapped
    ============================================================ */
 import { useEffect, useRef } from "react";
+import { registerCursorElements } from "@/hooks/useMagneticButton";
 
 const CREAM = "#F7E8D8";
 const CRIMSON = "#8C1A1A";
 
-/** Parse rgb(r,g,b) / rgba(r,g,b,a) string → luminance 0–1 */
 function luminance(cssColor: string): number {
   const m = cssColor.match(/[\d.]+/g);
-  if (!m || m.length < 3) return 1; // default light
+  if (!m || m.length < 3) return 1;
   const [r, g, b] = m.map(Number);
-  // Perceived luminance
   return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 }
 
-/** Walk up the DOM from el until we find a non-transparent background */
 function resolvedBg(el: Element | null): string {
   while (el && el !== document.documentElement) {
     const bg = getComputedStyle(el).backgroundColor;
     if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") return bg;
     el = el.parentElement;
   }
-  return "rgb(247, 232, 216)"; // fallback: cream
+  return "rgb(247, 232, 216)";
 }
 
 export default function CustomCursor() {
@@ -38,17 +36,20 @@ export default function CustomCursor() {
   useEffect(() => {
     if (window.matchMedia("(hover: none)").matches) return;
 
+    const dot = dotRef.current!;
+    const ring = ringRef.current!;
+
+    // Register with magnetic hook so it can snap the ring
+    registerCursorElements(dot, ring);
+
     let mx = window.innerWidth / 2;
     let my = window.innerHeight / 2;
     let rx = mx, ry = my;
     let raf: number;
     let visible = false;
     let currentColor = CRIMSON;
-
-    const dot = dotRef.current!;
-    const ring = ringRef.current!;
-    dot.style.opacity = "0";
-    ring.style.opacity = "0";
+    // Track whether ring is being externally snapped by magnetic hook
+    let isSnapped = false;
 
     const setColor = (color: string) => {
       if (color === currentColor) return;
@@ -56,6 +57,9 @@ export default function CustomCursor() {
       dot.style.background = color;
       ring.style.borderColor = color;
     };
+
+    dot.style.opacity = "0";
+    ring.style.opacity = "0";
 
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
@@ -67,35 +71,49 @@ export default function CustomCursor() {
         ring.style.opacity = "1";
       }
 
-      // Sample background colour under cursor
       const el = document.elementFromPoint(mx, my) as Element | null;
       const bg = resolvedBg(el);
-      const lum = luminance(bg);
-      // Dark background → use cream; light background → use crimson
-      setColor(lum < 0.45 ? CREAM : CRIMSON);
+      setColor(luminance(bg) < 0.45 ? CREAM : CRIMSON);
     };
 
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
     const tick = () => {
-      rx = lerp(rx, mx, 0.13);
-      ry = lerp(ry, my, 0.13);
+      // Dot always follows exactly
       dot.style.left = `${mx}px`;
       dot.style.top = `${my}px`;
-      ring.style.left = `${rx}px`;
-      ring.style.top = `${ry}px`;
+
+      // Check if ring is currently snapped by reading its inline width
+      // (magnetic hook sets width > 36px when snapped)
+      const ringW = parseFloat(ring.style.width) || 36;
+      isSnapped = ringW > 40;
+
+      if (!isSnapped) {
+        // Free-follow with lerp lag
+        rx = lerp(rx, mx, 0.13);
+        ry = lerp(ry, my, 0.13);
+        ring.style.left = `${rx}px`;
+        ring.style.top = `${ry}px`;
+      }
+      // When snapped, position is managed by useMagneticButton
+
       raf = requestAnimationFrame(tick);
     };
 
     const onEnter = () => {
-      ring.style.width = "54px";
-      ring.style.height = "54px";
+      // Only enlarge if not already snapped
+      if (!isSnapped) {
+        ring.style.width = "54px";
+        ring.style.height = "54px";
+      }
       dot.style.transform = "translate(-50%, -50%) scale(0)";
     };
 
     const onLeave = () => {
-      ring.style.width = "36px";
-      ring.style.height = "36px";
+      if (!isSnapped) {
+        ring.style.width = "36px";
+        ring.style.height = "36px";
+      }
       dot.style.transform = "translate(-50%, -50%) scale(1)";
     };
 
@@ -160,7 +178,8 @@ export default function CustomCursor() {
           zIndex: 9998,
           transform: "translate(-50%, -50%)",
           willChange: "left, top, width, height",
-          transition: "width 220ms cubic-bezier(0.23,1,0.32,1), height 220ms cubic-bezier(0.23,1,0.32,1), border-color 120ms, opacity 200ms",
+          transition:
+            "width 220ms cubic-bezier(0.23,1,0.32,1), height 220ms cubic-bezier(0.23,1,0.32,1), border-color 120ms, opacity 200ms",
         }}
       />
     </>

@@ -8,6 +8,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { ShoppingBag, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useMagneticButton } from "@/hooks/useMagneticButton";
+import { useTiltCard } from "@/hooks/useTiltCard";
 
 const PRODUCTS = [
   { id: 1, name: "Raspberry Mochi",     weight: "80g", price: "$8.50", tag: "New",        colour: "#e8b4c0" },
@@ -40,6 +41,7 @@ function useReveal(threshold = 0.15) {
 
 function ProductCard({ product, index }: { product: typeof PRODUCTS[0]; index: number }) {
   const [added, setAdded] = useState(false);
+  const tiltRef = useTiltCard<HTMLDivElement>(10);
 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -50,6 +52,7 @@ function ProductCard({ product, index }: { product: typeof PRODUCTS[0]; index: n
 
   return (
     <div
+      ref={tiltRef}
       className="product-card"
       style={{
         display: "flex",
@@ -58,6 +61,7 @@ function ProductCard({ product, index }: { product: typeof PRODUCTS[0]; index: n
         flexShrink: 0,
         animationDelay: `${index * 60}ms`,
         userSelect: "none",
+        willChange: "transform",
       }}
     >
       <div
