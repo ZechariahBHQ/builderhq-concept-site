@@ -107,7 +107,7 @@ export default function HeroSection() {
         height: "100svh",
         minHeight: "600px",
         overflow: "hidden",
-        background: "#1C1008",
+        background: "#1a4a42",
       }}
     >
       {/* Cinematic background photograph — parallax pinned */}
@@ -134,7 +134,7 @@ export default function HeroSection() {
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(105deg, rgba(12,8,4,0.72) 0%, rgba(12,8,4,0.38) 45%, rgba(12,8,4,0.08) 100%)",
+            "linear-gradient(105deg, rgba(10,30,26,0.72) 0%, rgba(10,30,26,0.38) 45%, rgba(10,30,26,0.08) 100%)",
           zIndex: 1,
         }}
       />
@@ -147,7 +147,7 @@ export default function HeroSection() {
           left: 0,
           right: 0,
           height: "35%",
-          background: "linear-gradient(to top, rgba(12,8,4,0.55) 0%, transparent 100%)",
+          background: "linear-gradient(to top, rgba(10,30,26,0.55) 0%, transparent 100%)",
           zIndex: 1,
         }}
       />
@@ -155,8 +155,9 @@ export default function HeroSection() {
       {/* Skew wrapper */}
       <div ref={skewRef} style={{ position: "absolute", inset: 0, zIndex: 2, willChange: "transform" }}>
 
-        {/* Oversized headline — bottom-left, progressive reveal */}
+        {/* Oversized headline — bottom-left on desktop, top-left on mobile */}
         <div
+          className="hero-headline-wrapper"
           style={{
             position: "absolute",
             bottom: "12%",
@@ -288,7 +289,7 @@ export default function HeroSection() {
           left: 0,
           right: 0,
           height: "36px",
-        background: "rgba(12,8,4,0.55)",
+        background: "rgba(10,30,26,0.55)",
         backdropFilter: "blur(4px)",
         overflow: "hidden",
         display: "flex",

@@ -185,8 +185,8 @@ export default function MarqueeGallery() {
             </defs>
             <path
               d="M 30,160 Q 300,-40 570,160 Q 300,80 30,160 Z"
-              fill="var(--cream-dark)"
-              opacity="0.5"
+              fill="var(--mint)"
+              opacity="0.6"
             />
             <text
               style={{

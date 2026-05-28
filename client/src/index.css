@@ -1,7 +1,7 @@
 /* ============================================================
    DESIGN SYSTEM — Warm Organic Editorial
    Movement: Mid-century food editorial meets contemporary web
-   Palette: Warm cream #F7E8D8 · Deep crimson #8C1A1A · Amber gold #D4A84B
+   Palette: Warm cream #F7E8D8 · Deep crimson #8C1A1A · Mint #C8E8E0
    Display: Bebas Neue (condensed, all-caps)
    Body: DM Sans (clean, geometric)
    ============================================================ */
@@ -43,8 +43,8 @@
   --crimson: #8C1A1A;
   --crimson-bright: #C41E3A;
   --crimson-light: rgba(140, 26, 26, 0.08);
-  --mint: #D4A84B;
-  --mint-dark: #B8903A;
+  --mint: #C8E8E0;
+  --mint-dark: #A8D4CA;
 
   /* Semantic tokens */
   --background: #F7E8D8;
@@ -59,7 +59,7 @@
   --secondary-foreground: #8C1A1A;
   --muted: #EDD8C0;
   --muted-foreground: rgba(140, 26, 26, 0.55);
-  --accent: #D4A84B;
+  --accent: #C8E8E0;
   --accent-foreground: #8C1A1A;
   --destructive: #C41E3A;
   --border: rgba(140, 26, 26, 0.25);
@@ -465,21 +465,31 @@
     /* ---- Hero ---- */
     #home {
       min-height: 100svh !important;
+      background: #1a4a42 !important;
     }
     /* Reduce oversized headline on mobile */
     #home .hero-headline {
       font-size: clamp(3.5rem, 18vw, 6rem) !important;
       line-height: 0.9 !important;
     }
-    /* Move right-side copy below the headline on mobile */
+    /* On mobile: stack headline top, copy bottom — no overlap */
     #home .hero-copy {
       position: absolute !important;
       top: auto !important;
-      bottom: 14% !important;
+      bottom: 8% !important;
       right: auto !important;
-      left: clamp(1.5rem, 4vw, 4rem) !important;
+      left: 1.25rem !important;
       transform: none !important;
-      max-width: calc(100vw - 3rem) !important;
+      max-width: calc(100vw - 2.5rem) !important;
+    }
+    /* Hide the paragraph text on mobile — just show the CTA */
+    #home .hero-copy > p {
+      display: none !important;
+    }
+    /* Push headline to top-left on mobile, away from copy */
+    .hero-headline-wrapper {
+      bottom: auto !important;
+      top: 18% !important;
     }
 
     /* ---- HeadlineStamp body copy ---- */
