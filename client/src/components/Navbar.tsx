@@ -62,7 +62,7 @@ export default function Navbar() {
           height: "64px",
           background: scrolled
             ? onHero
-              ? "rgba(20,58,50,0.82)"
+              ? "rgba(15,0,0,0.82)"
               : "rgba(247,232,216,0.92)"
             : "transparent",
           backdropFilter: scrolled ? "blur(10px)" : "none",

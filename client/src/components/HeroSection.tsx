@@ -98,7 +98,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section
+      <section
       id="home"
       style={{
         position: "relative",
@@ -107,6 +107,8 @@ export default function HeroSection() {
         minHeight: "600px",
         overflow: "hidden",
         background: "#0F0000",
+        marginTop: 0,
+        paddingTop: 0,
       }}
     >
       {/* Cinematic background photograph — parallax pinned */}
