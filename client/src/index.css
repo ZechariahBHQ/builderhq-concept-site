@@ -104,10 +104,17 @@
     color: var(--crimson);
   }
 
+  /* Suppress native pointer cursor everywhere — custom cursor handles all states */
+  *,
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
-  a[href] {
-    cursor: pointer;
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled) {
+    cursor: none !important;
   }
 
   ::selection {

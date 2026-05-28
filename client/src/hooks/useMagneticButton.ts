@@ -6,8 +6,8 @@
 import { useEffect, useRef } from "react";
 
 export function useMagneticButton<T extends HTMLElement>(
-  strength = 0.38,
-  radius = 80
+  strength = 0.62,
+  radius = 130
 ) {
   const ref = useRef<T>(null);
 
@@ -26,19 +26,21 @@ export function useMagneticButton<T extends HTMLElement>(
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       if (dist < radius) {
-        const pull = (1 - dist / radius) * strength;
-        el.style.transform = `translate(${dx * pull}px, ${dy * pull}px)`;
+        // Ease the pull: stronger near centre, gentler at edge
+      const ease = Math.pow(1 - dist / radius, 1.4);
+      const pull = ease * strength;
+      el.style.transform = `translate(${dx * pull}px, ${dy * pull}px)`;
       } else {
         el.style.transform = "";
       }
     };
 
     const onLeave = () => {
-      el.style.transition = "transform 400ms cubic-bezier(0.23,1,0.32,1)";
+      el.style.transition = "transform 500ms cubic-bezier(0.23,1,0.32,1)";
       el.style.transform = "";
       setTimeout(() => {
         if (el) el.style.transition = "";
-      }, 420);
+      }, 520);
     };
 
     window.addEventListener("mousemove", onMove);
