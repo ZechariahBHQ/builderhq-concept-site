@@ -1,6 +1,8 @@
 /* ============================================================
    Home — Warm Organic Editorial template
    Assembles all sections in order with custom cursor
+   data-fall-target marks elements that fall away during
+   the Flavours takeover sequence
    ============================================================ */
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
@@ -28,16 +30,16 @@ export default function Home() {
       <PageTransition />
       <CustomCursor />
       <RippleEffect />
-      <Navbar />
-      <HeroSection />
-      <AboutSection />
-      <StatsStrip />
-      <FlavoursSection />
-      <MarqueeStrip />
-      <StorySection />
-      <MarqueeGallery />
-      <PartnershipSection />
-      <ContactSection />
+      <div data-fall-target="navbar"><Navbar /></div>
+      <div data-fall-target="hero"><HeroSection /></div>
+      <div data-fall-target="about"><AboutSection /></div>
+      <div data-fall-target="stats"><StatsStrip /></div>
+      <div data-fall-target="flavours"><FlavoursSection /></div>
+      <div data-fall-target="marquee"><MarqueeStrip /></div>
+      <div data-fall-target="story"><StorySection /></div>
+      <div data-fall-target="gallery"><MarqueeGallery /></div>
+      <div data-fall-target="partnership"><PartnershipSection /></div>
+      <div data-fall-target="contact"><ContactSection /></div>
     </div>
   );
 }

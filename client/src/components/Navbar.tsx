@@ -2,24 +2,27 @@
    Navbar — Warm Organic Editorial design system
    Fixed top bar: logo left, outlined buttons right
    Right-side crimson menu drawer with oversized stacked links
+   Flavours button triggers the cinematic takeover sequence
    ============================================================ */
 import { useState, useEffect } from "react";
 import { ShoppingBag, X, Menu } from "lucide-react";
 import { useMagneticButton } from "@/hooks/useMagneticButton";
+import { useFlavours } from "@/contexts/FlavoursContext";
 
 const NAV_LINKS = [
-  { label: "Home", href: "#home" },
-  { label: "About Us", href: "#about" },
-  { label: "Flavours", href: "#flavours" },
-  { label: "Stockists", href: "#stockists" },
-  { label: "FAQ", href: "#faq" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "#home", takeover: false },
+  { label: "About Us", href: "#about", takeover: false },
+  { label: "Flavours", href: "#flavours", takeover: true },
+  { label: "Stockists", href: "#stockists", takeover: false },
+  { label: "FAQ", href: "#faq", takeover: false },
+  { label: "Contact", href: "#contact", takeover: false },
 ];
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartCount] = useState(0);
   const [scrolled, setScrolled] = useState(false);
+  const { enterShowcase, phase } = useFlavours();
 
   const cartRef = useMagneticButton<HTMLButtonElement>(0.3, 65);
   const flavoursRef = useMagneticButton<HTMLButtonElement>(0.3, 65);
@@ -36,8 +39,12 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
-  const handleNavClick = (href: string) => {
+  const handleNavClick = (href: string, takeover: boolean) => {
     setMenuOpen(false);
+    if (takeover && phase === "idle") {
+      setTimeout(() => enterShowcase(), 320);
+      return;
+    }
     setTimeout(() => {
       const el = document.querySelector(href);
       if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -59,7 +66,7 @@ export default function Navbar() {
         {/* Logo */}
         <a
           href="#home"
-          onClick={(e) => { e.preventDefault(); handleNavClick("#home"); }}
+          onClick={(e) => { e.preventDefault(); handleNavClick("#home", false); }}
           className="flex flex-col leading-none select-none"
           style={{ textDecoration: "none" }}
         >
@@ -113,11 +120,11 @@ export default function Navbar() {
             </span>
           </button>
 
-          {/* Flavours shortcut */}
+          {/* Flavours shortcut — triggers cinematic takeover */}
           <button
             ref={flavoursRef}
             className="btn-outline-crimson hidden sm:inline-flex"
-            onClick={() => handleNavClick("#flavours")}
+            onClick={() => handleNavClick("#flavours", true)}
             style={{ padding: "0.4rem 1rem", willChange: "transform" }}
           >
             Flavours
@@ -179,18 +186,24 @@ export default function Navbar() {
         {/* Nav links */}
         <ul
           role="menu"
-          className="flex flex-col px-8 md:px-12"
-          style={{ paddingTop: "2.5rem", gap: "0.25rem", listStyle: "none", margin: 0, padding: "2.5rem 3rem 0" }}
+          style={{
+            listStyle: "none",
+            margin: 0,
+            padding: "2.5rem 3rem 0",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.25rem",
+          }}
         >
           {NAV_LINKS.map((link, i) => (
             <li key={link.label} role="none">
               <button
                 role="menuitem"
-                onClick={() => handleNavClick(link.href)}
+                onClick={() => handleNavClick(link.href, link.takeover)}
                 style={{
                   fontFamily: "var(--font-display)",
                   fontSize: "clamp(2.8rem, 8vw, 4.5rem)",
-                  color: "var(--cream)",
+                  color: link.takeover ? "var(--cream)" : "var(--cream)",
                   lineHeight: 1.0,
                   letterSpacing: "0.04em",
                   background: "none",
@@ -203,17 +216,35 @@ export default function Navbar() {
                   opacity: 0.9,
                   transition: "opacity 150ms, letter-spacing 150ms",
                   animationDelay: `${i * 60}ms`,
+                  position: "relative",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.opacity = "1";
-                  (e.currentTarget as HTMLButtonElement).style.letterSpacing = "0.08em";
+                  const el = e.currentTarget as HTMLButtonElement;
+                  el.style.opacity = "1";
+                  el.style.letterSpacing = "0.08em";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.opacity = "0.9";
-                  (e.currentTarget as HTMLButtonElement).style.letterSpacing = "0.04em";
+                  const el = e.currentTarget as HTMLButtonElement;
+                  el.style.opacity = "0.9";
+                  el.style.letterSpacing = "0.04em";
                 }}
               >
                 {link.label.toUpperCase()}
+                {link.takeover && (
+                  <span
+                    style={{
+                      fontFamily: "var(--font-body)",
+                      fontSize: "0.6rem",
+                      letterSpacing: "0.2em",
+                      textTransform: "uppercase",
+                      color: "rgba(247,232,216,0.5)",
+                      marginLeft: "1rem",
+                      verticalAlign: "middle",
+                    }}
+                  >
+                    ✦ EXPLORE
+                  </span>
+                )}
               </button>
             </li>
           ))}
@@ -221,10 +252,8 @@ export default function Navbar() {
 
         {/* Drawer footer */}
         <div
-          className="px-8 md:px-12"
           style={{
-            paddingTop: "3rem",
-            paddingBottom: "2.5rem",
+            padding: "3rem 3rem 2.5rem",
             borderTop: "1px solid rgba(247,232,216,0.15)",
             marginTop: "3rem",
           }}

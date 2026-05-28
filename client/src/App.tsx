@@ -4,6 +4,8 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { FlavoursProvider } from "./contexts/FlavoursContext";
+import TakeoverOrchestrator from "./components/TakeoverOrchestrator";
 import Home from "./pages/Home";
 
 function Router() {
@@ -20,10 +22,13 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <FlavoursProvider>
+          <TooltipProvider>
+            <Toaster />
+            <TakeoverOrchestrator />
+            <Router />
+          </TooltipProvider>
+        </FlavoursProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
