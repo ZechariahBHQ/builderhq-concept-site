@@ -158,6 +158,7 @@ export default function HeroSection() {
 
         {/* Oversized headline — bottom-left, progressive reveal */}
         <div
+          className="hero-headline"
           style={{
             position: "absolute",
             bottom: "12%",
@@ -190,6 +191,7 @@ export default function HeroSection() {
 
         {/* Narrative paragraph + circular CTA — mid-right */}
         <div
+          className="hero-copy"
           style={{
             position: "absolute",
             top: "50%",

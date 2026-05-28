@@ -541,29 +541,44 @@
       transition: none;
     }
   }
-
   /* ============================================================
      MOBILE RESPONSIVENESS — comprehensive overrides for ≤768px
      ============================================================ */
   @media (max-width: 768px) {
-    /* ---- Hero ---- */
+
+    /* ---- Hero section ---- */
     #home {
       min-height: 100svh !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
     }
-    /* Reduce oversized headline on mobile */
-    #home .hero-headline {
-      font-size: clamp(3.5rem, 18vw, 6rem) !important;
+
+    /* Headline: stack bottom-left, smaller font, no overlap */
+    .hero-headline {
+      bottom: 10% !important;
+      left: 0 !important;
+      right: 0 !important;
+      padding-left: 1.25rem !important;
+      padding-right: 1.25rem !important;
+    }
+    .hero-headline > div {
+      font-size: clamp(3rem, 17vw, 5.5rem) !important;
       line-height: 0.9 !important;
     }
-    /* Move right-side copy below the headline on mobile */
-    #home .hero-copy {
+
+    /* Copy block: hide paragraph on mobile, keep only CTA */
+    .hero-copy {
       position: absolute !important;
       top: auto !important;
-      bottom: 14% !important;
-      right: auto !important;
-      left: clamp(1.5rem, 4vw, 4rem) !important;
+      bottom: 2.5rem !important;
+      right: 1.5rem !important;
+      left: auto !important;
       transform: none !important;
-      max-width: calc(100vw - 3rem) !important;
+      max-width: 200px !important;
+      gap: 0.75rem !important;
+    }
+    .hero-copy p {
+      display: none !important;
     }
 
     /* ---- HeadlineStamp body copy ---- */
@@ -575,7 +590,10 @@
     /* ---- About section ---- */
     .about-grid {
       grid-template-columns: 1fr !important;
-      gap: 2.5rem !important;
+      gap: 2rem !important;
+    }
+    .about-grid h2 {
+      font-size: clamp(2.2rem, 11vw, 4rem) !important;
     }
 
     /* ---- Stats strip ---- */
@@ -590,24 +608,26 @@
 
     /* ---- Flavours cards ---- */
     .product-card-wrapper {
-      width: clamp(180px, 70vw, 260px) !important;
+      width: clamp(180px, 72vw, 260px) !important;
     }
 
-    /* ---- Ingredient still-life — hide absolute cards on very small screens ---- */
+    /* ---- Ingredient still-life — hide absolute floating cards ---- */
     .ingredient-card {
       display: none !important;
     }
     #ingredients {
       min-height: auto !important;
-      padding: 4rem 1.5rem !important;
+      padding: 3.5rem 1.25rem !important;
     }
 
     /* ---- Story section ---- */
     .story-block {
       grid-template-columns: 1fr !important;
-      gap: 2rem !important;
+      gap: 1.5rem !important;
     }
-    /* On mobile, always show image first then text */
+    .story-block h2 {
+      font-size: clamp(2rem, 11vw, 3.5rem) !important;
+    }
     .story-block-reverse > div:first-child {
       order: 2;
     }
@@ -627,13 +647,33 @@
     }
     #partner-steps {
       grid-template-columns: 1fr !important;
-      gap: 2rem !important;
+      gap: 1.5rem !important;
+    }
+    #partnership h2 {
+      font-size: clamp(2.2rem, 11vw, 4rem) !important;
     }
 
     /* ---- Contact section ---- */
     #contact-grid {
       grid-template-columns: 1fr !important;
-      gap: 3rem !important;
+      gap: 2.5rem !important;
+    }
+    #contact h2 {
+      font-size: clamp(2.2rem, 11vw, 4rem) !important;
+    }
+    #contact {
+      padding-top: 4.5rem !important;
+      padding-bottom: 3.5rem !important;
+    }
+
+    /* ---- HeadlineStamp large text ---- */
+    .headline-stamp h2 {
+      font-size: clamp(3rem, 16vw, 6rem) !important;
+    }
+
+    /* ---- Flavours section header ---- */
+    #flavours h2 {
+      font-size: clamp(2.5rem, 13vw, 5rem) !important;
     }
 
     /* ---- General container padding ---- */
@@ -644,60 +684,60 @@
 
     /* ---- Reduce section vertical padding ---- */
     section {
-      padding-top: 4rem !important;
-      padding-bottom: 4rem !important;
-    }
-    /* Keep hero full height */
-    #home {
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-    }
-    /* Keep contact padding */
-    #contact {
-      padding-top: 5rem !important;
-      padding-bottom: 4rem !important;
+      padding-top: 3.5rem !important;
+      padding-bottom: 3.5rem !important;
     }
 
     /* ---- Navbar: hide Flavours shortcut on mobile ---- */
     .nav-flavours-btn {
       display: none !important;
     }
+
+    /* ---- Footer social links wrap ---- */
+    footer .flex.gap-4 {
+      flex-wrap: wrap;
+      gap: 0.75rem !important;
+    }
   }
 
-  /* Extra small screens */
+  /* ---- Extra small screens (≤480px) ---- */
   @media (max-width: 480px) {
-    /* ---- Hero headline even smaller ---- */
-    #home .hero-headline {
-      font-size: clamp(3rem, 20vw, 5rem) !important;
+    .hero-headline > div {
+      font-size: clamp(2.6rem, 19vw, 4.5rem) !important;
     }
-    /* ---- Flavours section header ---- */
-    #flavours h2 {
-      font-size: clamp(2.8rem, 14vw, 5rem) !important;
+    .hero-copy {
+      bottom: 1.5rem !important;
+      right: 1.25rem !important;
     }
-    /* ---- Story headings ---- */
+    .headline-stamp h2 {
+      font-size: clamp(2.8rem, 18vw, 5.5rem) !important;
+    }
+    .about-grid h2,
+    #flavours h2,
+    #contact h2,
+    #partnership h2,
     .story-block h2 {
-      font-size: clamp(2.2rem, 12vw, 4rem) !important;
+      font-size: clamp(2rem, 12vw, 3.5rem) !important;
     }
-    /* ---- Contact heading ---- */
-    #contact h2 {
-      font-size: clamp(2.5rem, 14vw, 5rem) !important;
-    }
-    /* ---- Partnership heading ---- */
-    #partnership h2 {
-      font-size: clamp(2.5rem, 14vw, 5rem) !important;
-    }
-    /* ---- HeadlineStamp ---- */
-    .headline-stamp h2,
-    .headline-stamp div[style*='font-display'] {
-      font-size: clamp(3.5rem, 18vw, 7rem) !important;
-    }
-    /* ---- About heading ---- */
-    .about-grid h2 {
-      font-size: clamp(2.5rem, 13vw, 5rem) !important;
-    }
-    /* ---- Reduce mosaic to single column on tiny screens ---- */
     .mosaic-strip {
-      grid-template-columns: repeat(2, 1fr) !important;
+      grid-template-columns: 1fr !important;
     }
-}
+  }
+
+  /* ---- Reduced motion ---- */
+  @media (prefers-reduced-motion: reduce) {
+    .spin-slow {
+      animation: none;
+    }
+    .reveal,
+    .reveal-stagger > * {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .path-animate {
+      stroke-dashoffset: 0;
+      transition: none;
+    }
+  }
 }

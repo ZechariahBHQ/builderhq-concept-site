@@ -1,12 +1,13 @@
 /* ============================================================
    Navbar — Warm Organic Editorial design system
-   Fixed top bar: logo left, outlined buttons right
-   Right-side crimson menu drawer with oversized stacked links
-   Flavours button scrolls to the flavours shelf section
+   - Over hero: fully transparent, logo + buttons float with NO background
+   - After hero: cream header fades in with blur backdrop
+   - Buttons: cream outlined over dark, crimson outlined over light
    ============================================================ */
 import { useState, useEffect } from "react";
 import { ShoppingBag, X, Menu } from "lucide-react";
 import { useMagneticButton } from "@/hooks/useMagneticButton";
+
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
   { label: "About Us", href: "#about" },
@@ -19,18 +20,16 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartCount] = useState(0);
-  const [scrolled, setScrolled] = useState(false);
-  const [onHero, setOnHero] = useState(true); // true = over dark hero
+  // pastHero = true once user has scrolled past the hero section
+  const [pastHero, setPastHero] = useState(false);
   const cartRef = useMagneticButton<HTMLButtonElement>(0.72, 120);
   const flavoursRef = useMagneticButton<HTMLButtonElement>(0.72, 120);
   const menuRef = useMagneticButton<HTMLButtonElement>(0.72, 120);
 
   useEffect(() => {
     const handleScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 40);
-      // Hero section is roughly one viewport tall
-      setOnHero(y < window.innerHeight * 0.85);
+      // Hero is 100svh tall — switch once we're 90% past it
+      setPastHero(window.scrollY > window.innerHeight * 0.9);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -60,16 +59,14 @@ export default function Navbar() {
         className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-6 md:px-10"
         style={{
           height: "64px",
-          background: scrolled
-            ? onHero
-              ? "rgba(15,0,0,0.82)"
-              : "rgba(247,232,216,0.92)"
-            : "transparent",
-          backdropFilter: scrolled ? "blur(10px)" : "none",
-          transition: "background 400ms, backdrop-filter 400ms",
+          // No background at all while over hero — only appears after hero
+          background: pastHero ? "rgba(247,232,216,0.94)" : "transparent",
+          backdropFilter: pastHero ? "blur(12px)" : "none",
+          borderBottom: pastHero ? "1px solid rgba(140,26,26,0.1)" : "none",
+          transition: "background 500ms cubic-bezier(0.23,1,0.32,1), backdrop-filter 500ms, border-color 500ms",
         }}
       >
-        {/* Logo */}
+        {/* Logo — cream over hero, crimson after */}
         <a
           href="#home"
           onClick={(e) => { e.preventDefault(); handleNavClick("#home"); }}
@@ -82,10 +79,9 @@ export default function Navbar() {
               fontSize: "0.6rem",
               letterSpacing: "0.3em",
               textTransform: "uppercase",
-              color: onHero ? "rgba(247,232,216,0.7)" : "var(--crimson)",
-              opacity: 0.7,
+              color: pastHero ? "rgba(140,26,26,0.6)" : "rgba(247,232,216,0.7)",
               lineHeight: 1,
-              transition: "color 400ms",
+              transition: "color 500ms",
             }}
           >
             THE
@@ -94,10 +90,10 @@ export default function Navbar() {
             style={{
               fontFamily: "var(--font-display)",
               fontSize: "1.7rem",
-              color: onHero ? "var(--cream)" : "var(--crimson)",
+              color: pastHero ? "var(--crimson)" : "var(--cream)",
               letterSpacing: "0.06em",
               lineHeight: 1,
-              transition: "color 400ms",
+              transition: "color 500ms",
             }}
           >
             BRAND
@@ -106,21 +102,26 @@ export default function Navbar() {
             style={{
               display: "block",
               height: "2px",
-              background: onHero ? "var(--cream)" : "var(--crimson)",
+              background: pastHero ? "var(--crimson)" : "var(--cream)",
               width: "100%",
               marginTop: "2px",
-              transition: "background 400ms",
+              transition: "background 500ms",
             }}
           />
         </a>
 
-        {/* Right controls */}
+        {/* Right controls — float with no box over hero */}
         <div className="flex items-center gap-2">
           {/* Cart */}
           <button
             ref={cartRef}
-            className={onHero ? "btn-outline-cream" : "btn-outline-crimson"}
-            style={{ padding: "0.4rem 0.75rem", gap: "0.4rem", willChange: "transform", transition: "color 400ms, border-color 400ms" }}
+            className={pastHero ? "btn-outline-crimson" : "btn-outline-cream"}
+            style={{
+              padding: "0.4rem 0.75rem",
+              gap: "0.4rem",
+              willChange: "transform",
+              transition: "color 500ms, border-color 500ms, background 180ms",
+            }}
             aria-label="Open cart"
           >
             <ShoppingBag size={14} strokeWidth={1.5} />
@@ -129,12 +130,16 @@ export default function Navbar() {
             </span>
           </button>
 
-          {/* Flavours shortcut */}
+          {/* Flavours shortcut — hidden on mobile */}
           <button
             ref={flavoursRef}
-            className={`${onHero ? "btn-outline-cream" : "btn-outline-crimson"} hidden sm:inline-flex`}
+            className={`${pastHero ? "btn-outline-crimson" : "btn-outline-cream"} nav-flavours-btn hidden sm:inline-flex`}
             onClick={() => handleNavClick("#flavours")}
-            style={{ padding: "0.4rem 1rem", willChange: "transform", transition: "color 400ms, border-color 400ms" }}
+            style={{
+              padding: "0.4rem 1rem",
+              willChange: "transform",
+              transition: "color 500ms, border-color 500ms, background 180ms",
+            }}
           >
             Flavours
           </button>
@@ -142,10 +147,15 @@ export default function Navbar() {
           {/* Menu trigger */}
           <button
             ref={menuRef}
-            className={onHero ? "btn-outline-cream" : "btn-outline-crimson"}
+            className={pastHero ? "btn-outline-crimson" : "btn-outline-cream"}
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
-            style={{ padding: "0.4rem 0.9rem", gap: "0.5rem", willChange: "transform" }}
+            style={{
+              padding: "0.4rem 0.9rem",
+              gap: "0.5rem",
+              willChange: "transform",
+              transition: "color 500ms, border-color 500ms, background 180ms",
+            }}
           >
             <span style={{ fontFamily: "var(--font-body)", fontSize: "0.75rem", letterSpacing: "0.12em" }}>
               Menu
@@ -185,7 +195,6 @@ export default function Navbar() {
               background: "none",
               border: "1.5px solid rgba(247,232,216,0.4)",
               padding: "0.4rem 0.9rem",
-              cursor: "pointer",
             }}
           >
             Menu <X size={14} strokeWidth={1.5} />
@@ -209,15 +218,14 @@ export default function Navbar() {
               <button
                 role="menuitem"
                 onClick={() => handleNavClick(link.href)}
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "clamp(2.8rem, 8vw, 4.5rem)",
-                color: "var(--cream)",
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "clamp(2.8rem, 8vw, 4.5rem)",
+                  color: "var(--cream)",
                   lineHeight: 1.0,
                   letterSpacing: "0.04em",
                   background: "none",
                   border: "none",
-                  cursor: "pointer",
                   display: "block",
                   width: "100%",
                   textAlign: "left",
@@ -225,7 +233,6 @@ export default function Navbar() {
                   opacity: 0.9,
                   transition: "opacity 150ms, letter-spacing 150ms",
                   animationDelay: `${i * 60}ms`,
-                  position: "relative",
                 }}
                 onMouseEnter={(e) => {
                   const el = e.currentTarget as HTMLButtonElement;
