@@ -1,24 +1,11 @@
 /* ============================================================
    useMagneticButton — Warm Organic Editorial
-   Integrated systems:
    • Magnetic pull (strength 0.85, radius 180px, eased curve)
    • H: Gravity field glow — soft radial gradient appears as
      cursor approaches, intensifies closer to centre
-   • D: Sticky ring snap — cursor ring locks to button centre
-     on enter; dot moves freely inside
+   Sticky snap (D) removed — felt unnatural on fast movement
    ============================================================ */
 import { useEffect, useRef } from "react";
-
-// Global ring reference so we can reposition it from here
-let globalRingEl: HTMLElement | null = null;
-let globalDotEl: HTMLElement | null = null;
-let ringSnapped = false;
-let snapTarget: { x: number; y: number } | null = null;
-
-export function registerCursorElements(dot: HTMLElement, ring: HTMLElement) {
-  globalDotEl = dot;
-  globalRingEl = ring;
-}
 
 export function useMagneticButton<T extends HTMLElement>(
   strength = 0.85,
@@ -31,7 +18,7 @@ export function useMagneticButton<T extends HTMLElement>(
     if (!el) return;
     if (window.matchMedia("(hover: none)").matches) return;
 
-    // ── H: Inject gravity glow pseudo-element via a div overlay ──
+    // ── H: Gravity glow overlay ──
     const glow = document.createElement("div");
     glow.style.cssText = `
       position: absolute;
@@ -40,11 +27,10 @@ export function useMagneticButton<T extends HTMLElement>(
       background: radial-gradient(circle, rgba(140,26,26,0.18) 0%, rgba(140,26,26,0) 70%);
       pointer-events: none;
       opacity: 0;
-      transition: opacity 300ms ease, transform 300ms ease;
+      transition: opacity 280ms ease, transform 280ms ease;
       z-index: -1;
       transform: scale(0.6);
     `;
-    // Ensure parent can contain the glow
     const prevPosition = getComputedStyle(el).position;
     if (prevPosition === "static") el.style.position = "relative";
     el.style.overflow = "visible";
@@ -59,51 +45,19 @@ export function useMagneticButton<T extends HTMLElement>(
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       if (dist < radius) {
-        // ── Magnetic pull ──
+        // Eased pull — stronger near centre, gentler at edge
         const ease = Math.pow(1 - dist / radius, 1.3);
         const pull = ease * strength;
         el.style.transform = `translate(${dx * pull}px, ${dy * pull}px)`;
 
-        // ── H: Gravity glow intensity increases as cursor approaches ──
-        const glowIntensity = 1 - dist / radius;
-        glow.style.opacity = String(glowIntensity * 0.9);
-        glow.style.transform = `scale(${0.6 + glowIntensity * 0.5})`;
-
-        // ── D: Snap ring to button centre when close ──
-        if (!ringSnapped && globalRingEl && dist < radius * 0.65) {
-          ringSnapped = true;
-          snapTarget = { x: cx, y: cy };
-          globalRingEl.style.transition =
-            "left 220ms cubic-bezier(0.23,1,0.32,1), top 220ms cubic-bezier(0.23,1,0.32,1), width 220ms, height 220ms, border-color 120ms, opacity 200ms";
-          globalRingEl.style.left = `${cx}px`;
-          globalRingEl.style.top = `${cy}px`;
-          globalRingEl.style.width = `${Math.max(rect.width, rect.height) + 16}px`;
-          globalRingEl.style.height = `${Math.max(rect.width, rect.height) + 16}px`;
-        } else if (ringSnapped && snapTarget) {
-          // Keep ring locked to button centre (button itself moves with magnet)
-          const btnRect = el.getBoundingClientRect();
-          const bcx = btnRect.left + btnRect.width / 2;
-          const bcy = btnRect.top + btnRect.height / 2;
-          globalRingEl!.style.left = `${bcx}px`;
-          globalRingEl!.style.top = `${bcy}px`;
-        }
+        // H: Glow intensifies as cursor approaches
+        const intensity = 1 - dist / radius;
+        glow.style.opacity = String(intensity * 0.9);
+        glow.style.transform = `scale(${0.6 + intensity * 0.5})`;
       } else {
         el.style.transform = "";
         glow.style.opacity = "0";
         glow.style.transform = "scale(0.6)";
-
-        // ── D: Release ring snap ──
-        if (ringSnapped) {
-          ringSnapped = false;
-          snapTarget = null;
-          if (globalRingEl) {
-            globalRingEl.style.transition =
-              "width 220ms cubic-bezier(0.23,1,0.32,1), height 220ms cubic-bezier(0.23,1,0.32,1), border-color 120ms, opacity 200ms";
-            globalRingEl.style.width = "36px";
-            globalRingEl.style.height = "36px";
-            // Ring will resume following cursor via CustomCursor's RAF loop
-          }
-        }
       }
     };
 
@@ -113,17 +67,6 @@ export function useMagneticButton<T extends HTMLElement>(
       glow.style.opacity = "0";
       glow.style.transform = "scale(0.6)";
       setTimeout(() => { if (el) el.style.transition = ""; }, 570);
-
-      if (ringSnapped) {
-        ringSnapped = false;
-        snapTarget = null;
-        if (globalRingEl) {
-          globalRingEl.style.transition =
-            "width 220ms cubic-bezier(0.23,1,0.32,1), height 220ms cubic-bezier(0.23,1,0.32,1), border-color 120ms, opacity 200ms";
-          globalRingEl.style.width = "36px";
-          globalRingEl.style.height = "36px";
-        }
-      }
     };
 
     window.addEventListener("mousemove", onMove);
@@ -140,4 +83,5 @@ export function useMagneticButton<T extends HTMLElement>(
   return ref;
 }
 
-export { ringSnapped };
+// Stub kept for compatibility — no-op since snap removed
+export function registerCursorElements(_dot: HTMLElement, _ring: HTMLElement) {}

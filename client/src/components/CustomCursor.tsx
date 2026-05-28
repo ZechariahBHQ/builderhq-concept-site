@@ -1,14 +1,12 @@
 /* ============================================================
    CustomCursor — Warm Organic Editorial
    • Dot follows cursor exactly
-   • Ring lerps behind with lag
+   • Ring lerps behind with smooth lag
    • Colour inverts: crimson on cream, cream on crimson
-   • Registers itself with useMagneticButton for:
-     - D: sticky ring snap to button centre
-     - H: ring scales up when snapped
+   • Ring enlarges on hover over interactive elements
+   Sticky snap removed — clean free-follow only
    ============================================================ */
 import { useEffect, useRef } from "react";
-import { registerCursorElements } from "@/hooks/useMagneticButton";
 
 const CREAM = "#F7E8D8";
 const CRIMSON = "#8C1A1A";
@@ -39,17 +37,12 @@ export default function CustomCursor() {
     const dot = dotRef.current!;
     const ring = ringRef.current!;
 
-    // Register with magnetic hook so it can snap the ring
-    registerCursorElements(dot, ring);
-
     let mx = window.innerWidth / 2;
     let my = window.innerHeight / 2;
     let rx = mx, ry = my;
     let raf: number;
     let visible = false;
     let currentColor = CRIMSON;
-    // Track whether ring is being externally snapped by magnetic hook
-    let isSnapped = false;
 
     const setColor = (color: string) => {
       if (color === currentColor) return;
@@ -79,41 +72,26 @@ export default function CustomCursor() {
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
     const tick = () => {
-      // Dot always follows exactly
       dot.style.left = `${mx}px`;
       dot.style.top = `${my}px`;
 
-      // Check if ring is currently snapped by reading its inline width
-      // (magnetic hook sets width > 36px when snapped)
-      const ringW = parseFloat(ring.style.width) || 36;
-      isSnapped = ringW > 40;
-
-      if (!isSnapped) {
-        // Free-follow with lerp lag
-        rx = lerp(rx, mx, 0.13);
-        ry = lerp(ry, my, 0.13);
-        ring.style.left = `${rx}px`;
-        ring.style.top = `${ry}px`;
-      }
-      // When snapped, position is managed by useMagneticButton
+      rx = lerp(rx, mx, 0.13);
+      ry = lerp(ry, my, 0.13);
+      ring.style.left = `${rx}px`;
+      ring.style.top = `${ry}px`;
 
       raf = requestAnimationFrame(tick);
     };
 
     const onEnter = () => {
-      // Only enlarge if not already snapped
-      if (!isSnapped) {
-        ring.style.width = "54px";
-        ring.style.height = "54px";
-      }
+      ring.style.width = "54px";
+      ring.style.height = "54px";
       dot.style.transform = "translate(-50%, -50%) scale(0)";
     };
 
     const onLeave = () => {
-      if (!isSnapped) {
-        ring.style.width = "36px";
-        ring.style.height = "36px";
-      }
+      ring.style.width = "36px";
+      ring.style.height = "36px";
       dot.style.transform = "translate(-50%, -50%) scale(1)";
     };
 
@@ -159,7 +137,8 @@ export default function CustomCursor() {
           zIndex: 9999,
           transform: "translate(-50%, -50%) scale(1)",
           willChange: "left, top, transform",
-          transition: "transform 150ms cubic-bezier(0.23,1,0.32,1), background 120ms, opacity 200ms",
+          transition:
+            "transform 150ms cubic-bezier(0.23,1,0.32,1), background 120ms, opacity 200ms",
         }}
       />
       <div

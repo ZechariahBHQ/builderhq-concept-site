@@ -14,6 +14,7 @@ import PartnershipSection from "@/components/PartnershipSection";
 import ContactSection from "@/components/ContactSection";
 import CustomCursor from "@/components/CustomCursor";
 import RippleEffect from "@/components/RippleEffect";
+import PageTransition from "@/components/PageTransition";
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
         cursor: "none",
       }}
     >
+      <PageTransition />
       <CustomCursor />
       <RippleEffect />
       <Navbar />
