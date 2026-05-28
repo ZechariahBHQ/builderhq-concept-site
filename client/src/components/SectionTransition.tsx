@@ -8,11 +8,11 @@ import { useEffect, useRef } from "react";
 
 // Section IDs MUST match the id="" on each section component
 const SECTION_MAP: Array<{ id: string; colour: string }> = [
-  { id: "home",        colour: "#1a4a42" },   // hero — deep teal
+  { id: "home",        colour: "#0F0000" },   // hero — espresso dark
   { id: "about",       colour: "#F7E8D8" },   // about — warm cream
   { id: "stats",       colour: "#EDD8C0" },   // stats strip — cream dark
   { id: "flavours",    colour: "#F7E8D8" },   // flavours — cream
-  { id: "ingredients", colour: "#C8E8E0" },   // ingredient still-life — mint (star moment)
+  { id: "ingredients", colour: "#EDD8C0" },   // ingredient still-life — cream warm
   { id: "story",       colour: "#F7E8D8" },   // story — cream
   { id: "gallery",     colour: "#EDD8C0" },   // gallery — cream dark
   { id: "partnership", colour: "#F7E8D8" },   // partnership — cream
@@ -42,8 +42,8 @@ export default function SectionTransition() {
 
   useEffect(() => {
     let raf: number;
-    let current = "#1a4a42";
-    let target = "#1a4a42";
+    let current = "#0F0000";
+    let target = "#0F0000";
 
     const getTarget = (): string => {
       const mid = window.innerHeight * 0.45;
@@ -84,7 +84,7 @@ export default function SectionTransition() {
         position: "fixed",
         inset: 0,
         zIndex: -1,
-        backgroundColor: "#1a4a42",
+        backgroundColor: "#0F0000",
         pointerEvents: "none",
         willChange: "background-color",
       }}

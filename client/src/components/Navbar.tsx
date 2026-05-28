@@ -20,7 +20,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartCount] = useState(0);
   const [scrolled, setScrolled] = useState(false);
-  const [onHero, setOnHero] = useState(true); // true = over teal hero
+  const [onHero, setOnHero] = useState(true); // true = over dark hero
   const cartRef = useMagneticButton<HTMLButtonElement>(0.72, 120);
   const flavoursRef = useMagneticButton<HTMLButtonElement>(0.72, 120);
   const menuRef = useMagneticButton<HTMLButtonElement>(0.72, 120);

@@ -1,7 +1,7 @@
 /* ============================================================
    DESIGN SYSTEM — Warm Organic Editorial
    Movement: Mid-century food editorial meets contemporary web
-   Palette: Warm cream #F7E8D8 · Deep crimson #8C1A1A · Mint #C8E8E0
+   Palette: Warm cream #F7E8D8 · Deep crimson #8C1A1A · Espresso #0F0000
    Display: Bebas Neue (condensed, all-caps)
    Body: DM Sans (clean, geometric)
    ============================================================ */
@@ -43,8 +43,8 @@
   --crimson: #8C1A1A;
   --crimson-bright: #C41E3A;
   --crimson-light: rgba(140, 26, 26, 0.08);
-  --mint: #C8E8E0;
-  --mint-dark: #A8D4CA;
+  --mint: #EDD8C0;
+  --mint-dark: #D8C8B0;
 
   /* Semantic tokens */
   --background: #F7E8D8;
@@ -59,7 +59,7 @@
   --secondary-foreground: #8C1A1A;
   --muted: #EDD8C0;
   --muted-foreground: rgba(140, 26, 26, 0.55);
-  --accent: #C8E8E0;
+  --accent: #EDD8C0;
   --accent-foreground: #8C1A1A;
   --destructive: #C41E3A;
   --border: rgba(140, 26, 26, 0.25);
@@ -172,7 +172,7 @@
     font-family: var(--font-display);
   }
 
-  /* ---- Outlined cream button (used over dark/teal hero) ---- */
+  /* ---- Outlined cream button (used over dark hero) ---- */
   .btn-outline-cream {
     display: inline-flex;
     align-items: center;

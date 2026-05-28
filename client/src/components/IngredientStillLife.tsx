@@ -138,7 +138,7 @@ export default function IngredientStillLife() {
         padding: "6rem 2rem",
       }}
     >
-      {/* Subtle teal circle — depth accent */}
+      {/* Subtle warm glow circle — depth accent */}
       <div
         aria-hidden="true"
         style={{
@@ -149,7 +149,7 @@ export default function IngredientStillLife() {
           width: "min(60vw, 500px)",
           height: "min(60vw, 500px)",
           borderRadius: "50%",
-          background: "var(--mint)",
+          background: "var(--cream-dark)",
           opacity: 0.22,
           filter: "blur(60px)",
           pointerEvents: "none",
