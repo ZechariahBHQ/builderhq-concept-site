@@ -2,21 +2,24 @@
    SectionTransition — Scroll-driven background colour morph
    Fixed layer behind all content. Section IDs must match
    the id attributes on each section element in the DOM.
-   Colour lerps smoothly at ~0.06 per frame (≈ 60fps).
+   Lerp speed adapts: slow for large colour jumps (cream→crimson),
+   fast for small shifts (cream→cream-dark).
    ============================================================ */
 import { useEffect, useRef } from "react";
 
 // Section IDs MUST match the id="" on each section component
-const SECTION_MAP: Array<{ id: string; colour: string }> = [
-  { id: "home",        colour: "#0F0000" },   // hero — espresso dark
-  { id: "about",       colour: "#F7E8D8" },   // about — warm cream
-  { id: "stats",       colour: "#EDD8C0" },   // stats strip — cream dark
-  { id: "flavours",    colour: "#F7E8D8" },   // flavours — cream
-  { id: "ingredients", colour: "#EDD8C0" },   // ingredient still-life — cream warm
-  { id: "story",       colour: "#F7E8D8" },   // story — cream
-  { id: "gallery",     colour: "#EDD8C0" },   // gallery — cream dark
-  { id: "partnership", colour: "#F7E8D8" },   // partnership — cream
-  { id: "contact",     colour: "#8C1A1A" },   // contact — crimson
+const SECTION_MAP: Array<{ id: string; colour: string; threshold?: number }> = [
+  { id: "home",        colour: "#0F0000" },
+  { id: "about",       colour: "#F7E8D8" },
+  { id: "stats",       colour: "#EDD8C0" },
+  { id: "flavours",    colour: "#F7E8D8" },
+  { id: "ingredients", colour: "#EDD8C0" },
+  { id: "story",       colour: "#F7E8D8" },
+  { id: "gallery",     colour: "#EDD8C0" },
+  { id: "partnership", colour: "#F7E8D8" },
+  // Contact uses a lower threshold so crimson starts bleeding in
+  // before the section fully enters — feels like a slow sunset
+  { id: "contact",     colour: "#8C1A1A", threshold: 0.72 },
 ];
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -37,6 +40,12 @@ function lerpColour(from: string, to: string, t: number): string {
   return rgbToHex(r1 + (r2 - r1) * t, g1 + (g2 - g1) * t, b1 + (b2 - b1) * t);
 }
 
+function colourDistance(a: string, b: string): number {
+  const [r1, g1, b1] = hexToRgb(a);
+  const [r2, g2, b2] = hexToRgb(b);
+  return Math.sqrt((r2 - r1) ** 2 + (g2 - g1) ** 2 + (b2 - b1) ** 2);
+}
+
 export default function SectionTransition() {
   const bgRef = useRef<HTMLDivElement>(null);
 
@@ -46,12 +55,13 @@ export default function SectionTransition() {
     let target = "#0F0000";
 
     const getTarget = (): string => {
-      const mid = window.innerHeight * 0.45;
       for (let i = SECTION_MAP.length - 1; i >= 0; i--) {
-        const el = document.getElementById(SECTION_MAP[i].id);
+        const section = SECTION_MAP[i];
+        const el = document.getElementById(section.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= mid) return SECTION_MAP[i].colour;
+          const t = section.threshold ?? 0.45;
+          if (rect.top <= window.innerHeight * t) return section.colour;
         }
       }
       return SECTION_MAP[0].colour;
@@ -59,14 +69,14 @@ export default function SectionTransition() {
 
     const tick = () => {
       target = getTarget();
-        if (current !== target) {
-        current = lerpColour(current, target, 0.035);
+      if (current !== target) {
+        // Adapt lerp speed: large jumps (e.g. cream→crimson) get a slower
+        // speed so the transition feels like a gradual bleed, not a cut
+        const dist = colourDistance(current, target);
+        const speed = dist > 100 ? 0.014 : dist > 40 ? 0.028 : 0.042;
+        current = lerpColour(current, target, speed);
         // Snap when very close to avoid infinite micro-lerp
-        if (Math.abs(hexToRgb(current)[0] - hexToRgb(target)[0]) < 1 &&
-            Math.abs(hexToRgb(current)[1] - hexToRgb(target)[1]) < 1 &&
-            Math.abs(hexToRgb(current)[2] - hexToRgb(target)[2]) < 1) {
-          current = target;
-        }
+        if (colourDistance(current, target) < 1) current = target;
         if (bgRef.current) bgRef.current.style.backgroundColor = current;
       }
       raf = requestAnimationFrame(tick);
