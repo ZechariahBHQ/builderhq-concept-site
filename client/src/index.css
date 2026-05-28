@@ -306,34 +306,8 @@
     stroke-dashoffset: 0;
   }
 
-  /* ---- Custom cursor dot ---- */
-  .cursor-dot {
-    width: 8px;
-    height: 8px;
-    background: var(--crimson);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%) scale(1);
-    will-change: left, top, transform;
-  }
-
-  .cursor-ring {
-    width: 36px;
-    height: 36px;
-    border: 1.5px solid var(--crimson);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9998;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    will-change: left, top, width, height;
-  }
+  /* ---- Custom cursor — fully inline-styled with mix-blend-mode:difference ---- */
+  /* Dot and ring are rendered via inline styles in CustomCursor.tsx */
 
   /* ---- Product card ---- */
   .product-card {

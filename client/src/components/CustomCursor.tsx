@@ -1,7 +1,8 @@
 /* ============================================================
    CustomCursor — Warm Organic Editorial
-   Crimson dot + lagging ring. Uses MutationObserver to re-attach
-   hover listeners as new buttons/links mount (fixes cursor loss).
+   Uses mix-blend-mode: difference so the cursor automatically
+   inverts: cream (#F7E8D8) on crimson sections, crimson on cream.
+   MutationObserver re-attaches hover listeners as new DOM mounts.
    ============================================================ */
 import { useEffect, useRef } from "react";
 
@@ -10,7 +11,6 @@ export default function CustomCursor() {
   const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Hide on pure-touch devices
     if (window.matchMedia("(hover: none)").matches) return;
 
     let mx = window.innerWidth / 2;
@@ -23,7 +23,6 @@ export default function CustomCursor() {
     const dot = dotRef.current!;
     const ring = ringRef.current!;
 
-    // Start hidden until first mouse move
     dot.style.opacity = "0";
     ring.style.opacity = "0";
 
@@ -51,33 +50,32 @@ export default function CustomCursor() {
       raf = requestAnimationFrame(tick);
     };
 
-    // Hover expand/contract
+    // Expand ring on interactive elements
     const onEnter = () => {
       ring.style.width = "54px";
       ring.style.height = "54px";
-      ring.style.borderColor = "var(--crimson)";
       dot.style.transform = "translate(-50%, -50%) scale(0)";
     };
 
     const onLeave = () => {
       ring.style.width = "36px";
       ring.style.height = "36px";
-      ring.style.borderColor = "var(--crimson)";
       dot.style.transform = "translate(-50%, -50%) scale(1)";
     };
 
-    const attachToEl = (el: Element) => {
-      el.addEventListener("mouseenter", onEnter);
-      el.addEventListener("mouseleave", onLeave);
-    };
-
     const attachAll = () => {
-      document.querySelectorAll("a, button").forEach(attachToEl);
+      document.querySelectorAll("a, button").forEach((el) => {
+        // Avoid double-attaching
+        if (!(el as HTMLElement).dataset.cursorBound) {
+          (el as HTMLElement).dataset.cursorBound = "1";
+          el.addEventListener("mouseenter", onEnter);
+          el.addEventListener("mouseleave", onLeave);
+        }
+      });
     };
 
     attachAll();
 
-    // Re-attach whenever new elements mount (menu drawer, toasts, etc.)
     const observer = new MutationObserver(attachAll);
     observer.observe(document.body, { childList: true, subtree: true });
 
@@ -93,17 +91,46 @@ export default function CustomCursor() {
 
   return (
     <>
+      {/* Dot — white fill + difference blend = inverts against any bg */}
       <div
         ref={dotRef}
-        className="cursor-dot"
         aria-hidden="true"
-        style={{ transition: "transform 150ms var(--ease-out), opacity 200ms" }}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: 10,
+          height: 10,
+          borderRadius: "50%",
+          background: "#ffffff",
+          pointerEvents: "none",
+          zIndex: 9999,
+          transform: "translate(-50%, -50%) scale(1)",
+          mixBlendMode: "difference",
+          willChange: "left, top, transform",
+          transition: "transform 150ms cubic-bezier(0.23,1,0.32,1), opacity 200ms",
+        }}
       />
+      {/* Ring — white border + difference blend = inverts against any bg */}
       <div
         ref={ringRef}
-        className="cursor-ring"
         aria-hidden="true"
-        style={{ transition: "width 220ms var(--ease-out), height 220ms var(--ease-out), opacity 200ms" }}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: 36,
+          height: 36,
+          borderRadius: "50%",
+          border: "1.5px solid #ffffff",
+          background: "transparent",
+          pointerEvents: "none",
+          zIndex: 9998,
+          transform: "translate(-50%, -50%)",
+          mixBlendMode: "difference",
+          willChange: "left, top, width, height",
+          transition: "width 220ms cubic-bezier(0.23,1,0.32,1), height 220ms cubic-bezier(0.23,1,0.32,1), opacity 200ms",
+        }}
       />
     </>
   );
