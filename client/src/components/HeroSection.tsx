@@ -45,9 +45,10 @@ export default function HeroSection() {
             : "";
       }
 
-      // Image parallax — moves at 0.45x scroll speed (slower = more depth)
+      // Image parallax — scale(1.18) ensures translateY never reveals background edges
       if (imgRef.current) {
-        imgRef.current.style.transform = `translateY(${y * 0.28}px) scale(1.08)`;
+        const clampedY = Math.min(y, window.innerHeight); // only parallax within hero
+        imgRef.current.style.transform = `translateY(${clampedY * 0.18}px) scale(1.18)`;
       }
 
       // Progressive word reveal based on scroll position
@@ -118,12 +119,9 @@ export default function HeroSection() {
         alt="Person enjoying an artisan ice cream popsicle"
         style={{
           position: "absolute",
-          top: "-8%",
-          left: 0,
-          right: 0,
-          bottom: "-8%",
+          inset: 0,
           width: "100%",
-          height: "116%",
+          height: "100%",
           objectFit: "cover",
           objectPosition: "center 40%",
           willChange: "transform",
