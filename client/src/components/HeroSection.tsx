@@ -31,10 +31,10 @@ export default function HeroSection({ onScrollDown }: HeroSectionProps) {
   const handleScrollDown = () => {
     if (onScrollDown) {
       onScrollDown();
-    } else {
-      const next = document.querySelector("#about");
-      if (next) next.scrollIntoView({ behavior: "smooth" });
+      return;
     }
+    // Scroll exactly one viewport height down — avoids overshoot on tall sections
+    window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
   };
 
   return (

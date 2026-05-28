@@ -315,8 +315,10 @@
     position: fixed;
     pointer-events: none;
     z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: opacity 0.2s;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%) scale(1);
+    will-change: left, top, transform;
   }
 
   .cursor-ring {
@@ -327,8 +329,10 @@
     position: fixed;
     pointer-events: none;
     z-index: 9998;
+    top: 0;
+    left: 0;
     transform: translate(-50%, -50%);
-    transition: width 0.25s var(--ease-out), height 0.25s var(--ease-out), opacity 0.2s;
+    will-change: left, top, width, height;
   }
 
   /* ---- Product card ---- */
